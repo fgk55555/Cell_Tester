@@ -9,6 +9,15 @@
 #define SW3 5
 #define SW4 4
 #define SW5 3
+#define CELLS 5
+
+float dischargeVoltage = 2.5;
+float resistorOhms = 1.0;
+float startingVoltages[CELLS] = {0.0};
+float currentVoltages[CELLS] = {0.0};
+unsigned int mAh[CELLS] = 0;
+int dischargeCurrent  = 128;
+bool testRunning = false;
 
 void setup() {
   Serial.begin(115200);
@@ -17,10 +26,24 @@ void setup() {
   pinMode(CH_3, INPUT);
   pinMode(CH_4, INPUT);
   pinMode(CH_5, INPUT);
+  for(int i=0;i<CELLS;++i){
+    startingVoltage[i] = analogRead
+  }
+  pinMode(SW1, OUTPUT);
+  pinMode(SW2, OUTPUT);
+  pinMode(SW3, OUTPUT);
+  pinMode(SW4, OUTPUT);
+  pinMode(SW5, OUTPUT);
 
+  //Check voltages on each 
+  
 }
 
 void loop() {
-  
 
+
+
+  if (Serial.available()) {
+    recvCommand();
+  }
 }
