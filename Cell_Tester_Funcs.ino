@@ -1,3 +1,27 @@
+void checkCells(){
+  for(int i=0;i<CELLS;++i){
+    currentVoltage[i] = (5/1023)*analogRead(channel[i]);  //Check voltages on each cell
+    if(currentVoltage[i] >= LIFEPO4_MIN && currentVoltage[i] <= LIFEPO4_MAX){
+      cellType[i] = LIFEPO4;
+    }
+    else if(currentVoltage[i] >= LIPO_MIN && currentVoltage[i] <= LIPO_MAX){
+      cellType[i] = LIPO;
+    }
+    Serial.print("Starting voltages, slot ");Serial.print(i);
+    Serial.print(": ");Serial.print(currentVoltage[i]);
+    Serial.print("\t Cell is: ");
+    if(cellType == LIPO){
+      Serial.println("charged lipo");
+    }
+    else if(cellType == LIFEPO4){
+      Serial.println("charged LIFEPO4");
+    }
+    else{
+      Serial.println("unknown");
+    }
+  }
+}
+
 void recvCommand(){
   String inputString = "";
   while(Serial.available()){
@@ -38,11 +62,12 @@ void CommandProcess(String inputString){
     if(testRunning){
       testRunning = true;
       Serial.println("Starting test");
+      startTime = millis();
     }
   }
-  else if(inputString.startsWith("C")){ //Set the discharge pwm
-    dischargeCurrent = atoi(pieces[1]);
-    Serial.print("Discharge current pwm set to: ");Serial.println(dischargeCurrent);
+  else if(inputString.startsWith("C")){ //Set the discharge current
+    dischargeCurrent = atof(pieces[1]);
+    Serial.print("Discharge current set to: ");Serial.println(dischargeCurrent);
   }
   else if(inputString.startsWith("V")){ //Change minimum voltage
     dischargeVoltage = atof(pieces[1]);
