@@ -1,3 +1,12 @@
+void printValues(){
+  for(int i=0;i<CELLS;++i){
+    Serial.print(i);Serial.print(": \t");
+    Serial.print(currentVoltage[i]);Serial.print('\t');
+    Serial.print(mAh[i]);Serial.print('\t');
+  }
+  Serial.println(lastTime - startTime);
+}
+
 void checkCells(){
   for(int i=0;i<CELLS;++i){
     currentVoltage[i] = (5/1023)*analogRead(channel[i]);  //Check voltages on each cell
@@ -10,10 +19,10 @@ void checkCells(){
     Serial.print("Starting voltages, slot ");Serial.print(i);
     Serial.print(": ");Serial.print(currentVoltage[i]);
     Serial.print("\t Cell is: ");
-    if(cellType == LIPO){
+    if(cellType[i] == LIPO){
       Serial.println("charged lipo");
     }
-    else if(cellType == LIFEPO4){
+    else if(cellType[i] == LIFEPO4){
       Serial.println("charged LIFEPO4");
     }
     else{

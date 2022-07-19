@@ -9,15 +9,15 @@
 
 float dischargeVoltage = 2.5;
 float resistorOhms = 1.0;
-float dischargeCurrent  = 1.0;
 float currentVoltage[CELLS] = {0.0};
+float mAh[CELLS] = {0};
 int channel[CELLS] = {A0,A1,A2,A3,A4};
 int control[CELLS] = {7,6,5,4,3};
 unsigned long startTime = 0;
 unsigned long currentTime = 0;
 unsigned long lastTime = 0;
-unsigned int mAh[CELLS] = {0};
 unsigned int pwm[CELLS] ={0};
+unsigned int dischargeCurrent  = 1000; //In milliamps
 byte cellType[CELLS] = {0};
 bool testRunning = false;
 
@@ -37,15 +37,27 @@ void setup() {
 }
 
 void loop() {
+  byte count = 0;
   if(testRunning){
+    currentTime = millis();
     for(int i=0;i<CELLS;++i){
-      currentVoltage[i] = (5/1023)*analogRead(channel[i]);
-      //mAh += 
-      pwm[i] = (dischargeCurrent / (currentVoltage[i]/resistorOhms)) * 256;
-      analogWrite(control[i], pwm[i]);
+      if(cellType[i] != UNDEFINED){
+        currentVoltage[i] = (5/1023)*analogRead(channel[i]);
+        mAh[i] += (dischargeCurrent * (currentTime - lastTime)) / 3600; //Millisecond to hour conversion
+        pwm[i] = ((dischargeCurrent/1000) / (currentVoltage[i]/resistorOhms)) * 256;
+        analogWrite(control[i], pwm[i]);
+      }
     }
+    lastTime = millis();
+    if(count >= 50){
+      count = 0;
+      printValues();
+    }
+    else
+      ++count;
   }
   delay(100);
+  ++count;
 
   if (Serial.available()) {
     recvCommand();
